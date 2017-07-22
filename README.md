@@ -19,4 +19,3 @@ revert 会产生新的提交，并不会真正删除history。
 add 3
 add 4
 add 5
-add 6
