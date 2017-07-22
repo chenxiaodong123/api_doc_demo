@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 自动扫描且只扫描@Controller -->
+    <context:component-scan
+            base-package="com.dianping"
+            use-default-filters="false">
+        <context:include-filter
+                type="annotation"
+                expression="org.springframework.stereotype.Controller"/>
+        <context:include-filter
+                type="annotation"
+                expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+    </context:component-scan>
+
+    <bean name="hystrixCommandAspect" class="com.netflix.hystrix.contrib.javanica.aop.aspectj.HystrixCommandAspect"/>
+
+    <aop:aspectj-autoproxy proxy-target-class="true" />
+
+
+    <!-- 使用Jackson完成请求和注解POJO的映射 -->
+    <mvc:annotation-driven>
+        <mvc:message-converters>
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <constructor-arg value="UTF-8"/>
+            </bean>
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="objectMapper">
+                    <bean class="com.fasterxml.jackson.databind.ObjectMapper">
+                        <!-- 处理responseBody 里面日期类型 -->
+                        <property name="dateFormat">
+                            <bean class="java.text.SimpleDateFormat">
+                                <constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss"/>
+                            </bean>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <!--&lt;!&ndash; 对静态资源文件的访问  方案一 （二选一） &ndash;&gt;-->
+    <!--<mvc:default-servlet-handler/>-->
+
+    <!-- 对静态资源文件的访问  方案二 （二选一）-->
+    <mvc:resources mapping="/apidoc/**" location="/apidoc/" cache-period="31556926"/>
+    <!--<mvc:resources mapping="/js/**" location="/js/" cache-period="31556926"/>-->
+    <!--<mvc:resources mapping="/css/**" location="/css/" cache-period="31556926"/>-->
+
+    <!--&lt;!&ndash; 定义视图解析器，在视图模型前后添加前缀后缀 暂时只支持jsp后缀&ndash;&gt;-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass"
+                  value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/views/" />
+        <property name="suffix" value=".jsp" /><!-- 后缀 -->
+    </bean>
+
+</beans>
