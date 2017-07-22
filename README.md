@@ -16,3 +16,5 @@ revert hash 这个hash为对应想删除的commit
 revert hash..HEAD 这个hash对应的commit不会被删除，会删除到它的后一次commit
 revert 会产生新的提交，并不会真正删除history。
 
+add 3
+add 4
