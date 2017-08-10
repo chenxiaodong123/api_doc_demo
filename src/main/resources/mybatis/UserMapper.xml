@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dianping.dao.UserDao">
+
+    <resultMap id="userList" type="com.dianping.data.User">
+        <id column="id" property="id" />
+        <result column="username" property="username" />
+        <result column="password" property="password" />
+    </resultMap>
+
+
+    <select id="selectUser" parameterType="User" resultType="User">
+        SELECT * FROM user WHERE username=#{username} AND password=#{password}
+    </select>
+    <insert id="insertUser" parameterType="User" flushCache="true">
+        INSERT INTO user (id,username,password) VALUES (#{id},#{username},#{password})
+    </insert>
+    <update id="updateUser" parameterType="User">
+        UPDATE user SET password=#{password} WHERE id=#{id}
+    </update>
+    <delete id="deleteUser" parameterType="int">
+        DELETE FROM user WHERE id=#{userId}
+    </delete>
+
+    <select id="selectUserLsit"  resultMap="userList">
+        SELECT * FROM user
+    </select>
+
+    <insert id="insertUserAuto" parameterType="User" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO user (username,password) VALUES (#{username},#{password})
+    </insert>
+
+    <insert id="batchInsertUser" parameterType="java.util.ArrayList" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO user (username,password) VALUES
+        <foreach collection="list" item="user" separator=",">
+            <![CDATA[
+            (#{user.username},#{user.password})
+            ]]>
+        </foreach>
+        on duplicate key UPDATE
+        password = values(password)
+
+    </insert>
+</mapper>

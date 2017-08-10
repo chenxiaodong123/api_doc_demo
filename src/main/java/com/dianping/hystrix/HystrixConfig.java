@@ -1,4 +1,4 @@
-package com.dianping;
+package com.dianping.hystrix;
 
 import lombok.extern.slf4j.Slf4j;
 
